@@ -1,0 +1,129 @@
+:root {
+    --player-max-width: 2000px;
+    --bs-primary: #2196f3;
+    /* Material Blue 500 */
+    --bs-secondary: #6c757d;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background: #f8f9fa;
+    color: #212529;
+    font-family: system-ui, sans-serif;
+    overflow: hidden;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+header,
+footer {
+    flex: 0 0 auto;
+    background: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+    padding: .5rem 1rem;
+}
+
+footer {
+    border-top: 1px solid #dee2e6;
+}
+
+header h5 {
+    margin: 0;
+    color: var(--bs-primary);
+}
+
+.player-wrapper {
+    flex: 1 1 auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.player-box {
+    position: relative;
+    height: 80vh;
+    aspect-ratio: 4 / 3;
+    width: auto;
+    max-width: var(--player-max-width);
+    background: #fff;
+    border: 3px solid var(--bs-primary);
+    border-radius: .5rem;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(33, 150, 243, .4);
+}
+
+#slide-container {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 2rem 3rem;
+    scroll-behavior: smooth;
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, .75);
+    border: 1px solid var(--bs-primary);
+    color: var(--bs-primary);
+    padding: .25rem .75rem;
+    font-size: 2rem;
+    border-radius: .35rem;
+    z-index: 10;
+    transition: background .2s;
+    user-select: none;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, .95);
+}
+
+#prev-btn {
+    left: .5rem;
+}
+
+#next-btn {
+    right: .5rem;
+}
+
+.footer-btn {
+    background: none;
+    border: none;
+    color: var(--bs-primary);
+    font-size: 1.4rem;
+    padding: .25rem .75rem;
+}
+
+.footer-btn:disabled {
+    color: var(--bs-secondary);
+}
+
+#slide-container h1,
+#slide-container h2,
+#slide-container h3 {
+    color: var(--bs-primary);
+}
+
+#slide-container img,
+#slide-container video {
+    max-width: 100%;
+    height: auto;
+    border-radius: .25rem;
+}
+
+#slide-container pre {
+    background: #e3f2fd;
+    padding: .75rem;
+    border-radius: .35rem;
+}
