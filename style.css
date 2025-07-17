@@ -127,3 +127,8 @@ header h5 {
     padding: .75rem;
     border-radius: .35rem;
 }
+
+.hidden-step {
+    opacity: 0;
+    visibility: hidden;
+}

@@ -1,18 +1,22 @@
 # Címdia
-Ez a SCORM‑képes lejátszó **Markdown** diákból épül.
+> Ez a SCORM‑képes lejátszó **Markdown** diákból épül.
+- 4:3-as képarány nagy kijelzőn
+- 100%-os arány kis kijelzőn
+- Animációk támogatása
+- Letölthető SCORM csomagok
 
 ---
-## 1. Dia – Bevezetés
-- 4:3 arány, 80vh magasság.
-- Bootstrap & Material Blue.
-- SCORM 1.2 / 2004 kommunikáció.
+## 2. Dia – Bevezetés
+- Mindig látható felsorolás­pont
+<p data-animate="animate__fadeInUp">Ez csak az első kattintásra jelenik meg.</p>
+<p data-animate="animate__fadeInRightBig">Ez meg a másodikra.</p>
 
 ---
-## 2. Kép példa
+## 3. Kép példa
 ![Kép](https://picsum.photos/640/480)
 
 ---
-## 3. Kód
+## 4. Kód
 ```javascript
 console.log('SCORM ready!');
 ```
