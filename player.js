@@ -1,5 +1,6 @@
 class ScormPlayer extends HTMLElement {
     async connectedCallback() {
+        this.frameworkLocation = this.getAttribute('framework') || './';
         this.slidesPath = this.getAttribute('slides') || 'slides.md';
         await this.loadDependencies();
         this.renderSkeleton();
@@ -28,10 +29,10 @@ class ScormPlayer extends HTMLElement {
 
         css('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css');
         css('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
-        css('./style.css')
+        css(this.frameworkLocation + 'style.css')
 
         return js('https://cdn.jsdelivr.net/npm/marked/marked.min.js')
-            .then(() => js('./SCORM_API_wrapper.js'));
+            .then(() => js(this.frameworkLocation + 'SCORM_API_wrapper.js'));
     }
 
     renderSkeleton() {
