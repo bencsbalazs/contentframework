@@ -67,8 +67,7 @@ class ScormPlayer extends HTMLElement {
     }
 
     initPlayer(mdText) {
-        const rawSlides = mdText.trim().split("---");
-        this.slides = rawSlides.map((md) => marked.parse(md));
+        this.slides = mdText.trim().split("---SLIDE---");
         this.total = this.slides.length;
         this.current = 0;
         this.steps = [];
@@ -88,6 +87,38 @@ class ScormPlayer extends HTMLElement {
         window.addEventListener('beforeunload', () => this.terminateSCORM());
         window.addEventListener('unload', () => this.terminateSCORM());
     }
+
+    postProcessContent() {
+        const tables = this.slideContainer.querySelectorAll('table');
+        tables.forEach(table => {
+            table.classList.add('table', 'table-bordered', 'table-striped');
+        });
+    }
+
+    prepareSteps() {
+        this.steps = Array.from(this.slideContainer.querySelectorAll('[data-animate]'));
+        this.stepIndex = 0;
+        this.steps.forEach((el) => {
+            el.innerHTML = marked.parse(el.innerHTML.trim());
+            el.classList.add('hidden-step', 'animate__animated', el.getAttribute('data-animate') || 'animate__fadeInUp');
+        });
+    }
+
+    renderSlide() {
+        // 1. Alap renderelés a marked segítségével.
+        this.slideContainer.innerHTML = marked.parse(this.slides[this.current]);
+
+        // --- JAVÍTÁS: A renderelés után meghívjuk az utófeldolgozó függvényt. ---
+        this.postProcessContent();
+
+        this.slideInfo.textContent = `${this.current + 1} / ${this.total}`;
+        this.prepareSteps();
+        this.updateNav();
+        this.updateSCORM();
+    }
+
+    // ... a többi metódus (initSCORM, updateSCORM, stb.) változatlan ...
+    // ... ezeket a teljesség kedvéért benne hagyom ...
 
     initSCORM() {
         this.scormActive = window.pipwerks && pipwerks.SCORM.init();
@@ -118,21 +149,6 @@ class ScormPlayer extends HTMLElement {
         pipwerks.SCORM.set('cmi.exit', 'suspend');
         pipwerks.SCORM.save();
         pipwerks.SCORM.quit();
-    }
-
-    prepareSteps() {
-        this.steps = Array.from(this.slideContainer.querySelectorAll('[data-animate]'));
-        this.stepIndex = 0;
-        this.steps.forEach((el) => {
-            el.classList.add('hidden-step', 'animate__animated', el.getAttribute('data-animate') || 'animate__fadeInUp');
-        });
-    }
-    renderSlide() {
-        this.slideContainer.innerHTML = this.slides[this.current];
-        this.slideInfo.textContent = `${this.current + 1} / ${this.total}`;
-        this.prepareSteps();
-        this.updateNav();
-        this.updateSCORM();
     }
     revealStep() {
         if (this.stepIndex < this.steps.length) {
