@@ -1,7 +1,7 @@
 class ScormPlayer extends HTMLElement {
     async connectedCallback() {
         this.frameworkLocation = this.getAttribute('framework') || './';
-        this.slidesPath = this.getAttribute('slides') || 'slides.md';
+        this.slidesPath = this.getAttribute('slides') || './slides.md';
         await this.loadDependencies();
         this.renderSkeleton();
         this.loadSlides();
@@ -28,6 +28,7 @@ class ScormPlayer extends HTMLElement {
         };
 
         css('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css');
+        js('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js');
         css('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
         css(this.frameworkLocation + 'style.css')
 
@@ -38,19 +39,29 @@ class ScormPlayer extends HTMLElement {
     renderSkeleton() {
         this.innerHTML = `
       <div class="player-box" id="player-box">
-        <button class="nav-btn" id="prev-btn" aria-label="Előző">❮</button>
-        <button class="nav-btn" id="next-btn" aria-label="Következő">❯</button>
         <div id="slide-container" tabindex="0"></div>
       </div>
       <div class="d-flex justify-content-center align-items-center gap-3 mt-2">
         <button class="footer-btn" id="footer-prev" aria-label="Előző">❮</button>
         <span id="slide-info" class="fw-bold"></span>
         <button class="footer-btn" id="footer-next" aria-label="Következő">❯</button>
-      </div>`;
+        <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#listOfContents">Menu</a>
+      </div>
+      <div class="modal fade" id="listOfContents" tabindex="-1" aria-labelledby="listOfContentsLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body content-center">
+        
+      </div>
+    </div>
+  </div>
+</div>
+      `;
 
         this.slideContainer = this.querySelector('#slide-container');
-        this.prevBtn = this.querySelector('#prev-btn');
-        this.nextBtn = this.querySelector('#next-btn');
         this.footerPrev = this.querySelector('#footer-prev');
         this.footerNext = this.querySelector('#footer-next');
         this.slideInfo = this.querySelector('#slide-info');
@@ -72,16 +83,12 @@ class ScormPlayer extends HTMLElement {
         this.current = 0;
         this.steps = [];
         this.stepIndex = 0;
-
-        this.prevBtn.addEventListener('click', () => this.goPrev());
-        this.nextBtn.addEventListener('click', () => this.goNext());
         this.footerPrev.addEventListener('click', () => this.goPrev());
         this.footerNext.addEventListener('click', () => this.goNext());
         window.addEventListener('keydown', (e) => {
             if (['ArrowLeft', 'PageUp', 'ArrowUp'].includes(e.key)) { e.preventDefault(); this.goPrev(); }
             if (['ArrowRight', 'PageDown', 'ArrowDown', ' '].includes(e.key)) { e.preventDefault(); this.goNext(); }
         });
-
         this.initSCORM();
         this.renderSlide();
         window.addEventListener('beforeunload', () => this.terminateSCORM());
@@ -93,6 +100,17 @@ class ScormPlayer extends HTMLElement {
         tables.forEach(table => {
             table.classList.add('table', 'table-bordered', 'table-striped');
         });
+
+        const titles = this.slides;
+        console.log(titles)
+        const listOfContents = document.getElementById('listOfContents').querySelector('.modal-body');
+        let list = document.createElement('ul');
+        titles.forEach(title => {
+            let li = document.createElement('li');
+            li.textContent = title.textContent
+            list.appendChild(li);
+        })
+        listOfContents.appendChild(list);
     }
 
     prepareSteps() {
@@ -105,20 +123,13 @@ class ScormPlayer extends HTMLElement {
     }
 
     renderSlide() {
-        // 1. Alap renderelés a marked segítségével.
         this.slideContainer.innerHTML = marked.parse(this.slides[this.current]);
-
-        // --- JAVÍTÁS: A renderelés után meghívjuk az utófeldolgozó függvényt. ---
         this.postProcessContent();
-
         this.slideInfo.textContent = `${this.current + 1} / ${this.total}`;
         this.prepareSteps();
         this.updateNav();
         this.updateSCORM();
     }
-
-    // ... a többi metódus (initSCORM, updateSCORM, stb.) változatlan ...
-    // ... ezeket a teljesség kedvéért benne hagyom ...
 
     initSCORM() {
         this.scormActive = window.pipwerks && pipwerks.SCORM.init();
@@ -161,6 +172,7 @@ class ScormPlayer extends HTMLElement {
         }
         return false;
     }
+
     goNext() {
         if (this.revealStep()) return;
         if (this.current < this.total - 1) {
@@ -185,8 +197,8 @@ class ScormPlayer extends HTMLElement {
     updateNav() {
         const atStart = this.current === 0 && this.stepIndex === 0;
         const atEnd = this.current === this.total - 1 && this.stepIndex === this.steps.length;
-        [this.prevBtn, this.footerPrev].forEach((b) => (b.disabled = atStart));
-        [this.nextBtn, this.footerNext].forEach((b) => (b.disabled = atEnd));
+        [this.footerPrev].forEach((b) => (b.disabled = atStart));
+        [this.footerNext].forEach((b) => (b.disabled = atEnd));
     }
 }
 
